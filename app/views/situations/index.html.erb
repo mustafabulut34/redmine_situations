@@ -1,0 +1,93 @@
+<style>
+table, tr{
+    border: 1px solid black;
+    border-radius: 10px;
+    text-align:left;
+}
+th {
+    background-color:#D3D3D3;
+}
+</style>
+<h2>Situations</h2>
+User:
+<form>
+    <input type="hidden" name="project_id" value="<%= params[:project_id]%>">
+    <select name="formuser" >
+      <option value="">All</option>
+      <% @forusers.each  do |s|%>
+        <% if params[:formuser] == s.author_id.to_s %>
+            <option selected value="<%= s.author_id%>"><%= User.find_by_id(s.author_id) %></option>
+        <% else %>
+            <option value="<%= s.author_id%>"><%= User.find_by_id(s.author_id) %></option>
+        <% end %>
+      <%end%>
+    </select>
+    <input type="submit" value="Apply">
+</form>
+
+<% 
+    if params[:sort] == "reverse" 
+        @srt="normal"
+        @issuem = @issues.all.reverse
+    elsif params[:time] == "1"
+        @time = 0;
+        @issuem = @issues.all.sort_by { |f| f.created_on }.reverse
+    elsif params[:time] == "0"
+        @time = 1;
+        @issuem = @issues.all.sort_by { |f| f.created_on }
+    else
+        @srt="reverse"
+        @time="1"
+        @issuem = @issues.all
+    end
+%>
+
+<table style="width:80%;">
+    <tr>
+        <% if params[:formuser] == "" || params[:formuser] == nil %>
+            <th width=1px><a href="?project_id=<%= params[:project_id]%>&sort=<%=@srt%>">Issue ID</a></th>
+        <% else %>
+            <th width=1px><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&sort=<%=@srt%>">Issue ID</a></th>
+        <% end %>
+        <th width=20px>Issue</th>
+        <th width=20px>User</th>
+        <% if params[:formuser] == "" || params[:formuser] == nil %>
+            <th width=2px><a href="?project_id=<%= params[:project_id]%>&time=<%=@time%>">Time(H)</a></th>
+        <% else %>
+            <th width=2px><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&time=<%=@time%>">Time(H)</a></th>
+        <% end %>
+        <th width=20px>Category</th>
+        <th width=20px>Status</th>
+    </tr>
+    <% if @issuem == nil %>
+        <tr>
+            <td width=1px>-</td>
+            <td width=20px>-</td>
+            <td width=20px>-</td>
+            <td width=2px>-</td>
+            <td width=20px>-</td>
+            <td width=20px>-</td>
+        </tr>
+    <% else %>
+        <% @issuem.each do |s| %>
+            <tr bgcolor="#EEEEEE">
+                <td width=1px><%= s.id %></td>
+                <td width=20px><a href="/issues/<%=s.id%>"><%= s.subject %></a></td>
+                <td width=20px><%= User.find_by_id(s.author_id) %></td>
+                <td width=2px><%= ((Time.now-s.created_on).to_i/60/60) %></td>
+                <td width=20px><%= s.category_id %></td>
+                <td width=20px><%= IssueStatus.find_by_id(s.status_id) %>
+                   <%@jrs.each do |t|%>
+                         <%if t.journalized_id == s.id%>
+                             <% @jrsd.each do |s|%>
+                                <%if t.id == s.journal_id%>
+                                    <tr><td></td><td></td><td><%=User.find_by_id(t.user_id)%></td><td></td><td></td><td width=20px><%=IssueStatus.find_by_id(s.old_value)%>-><%= IssueStatus.find_by_id(s.value) %></td><tr>
+                                <%end%>
+                            <% end %>
+                        <%end%>
+                    <%end%>
+                </td>
+            </tr>
+        <%end%>
+    <%end%>
+</table>
