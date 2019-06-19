@@ -1,5 +1,7 @@
-Install
+=Install
 
 $ cd /your/path/redmine/plugins
+
 $ git clone https://github.com/mustafabulut34/redmine_situations.git
+
 $ # redmine restart
