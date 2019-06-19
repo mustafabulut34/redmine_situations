@@ -3,8 +3,8 @@ Redmine::Plugin.register :situations do
   author 'Mustafa BULUT'
   description 'This is a plugin for Situations'
   version '0.0.1'
-  #url 'http://example.com/path/to/plugin'
-  #author_url 'http://example.com/about'
+  url 'https://github.com/mustafabulut34/redmine_situations'
+  author_url 'https://www.linkedin.com/in/mustafabulut34/'
   
   permission :situations, { :situations=> [:index] }, :public => true
   menu :project_menu, :status, { :controller => 'situations', :action => 'index' }, :caption => 'Situations', :after => :activity, :param => :project_id

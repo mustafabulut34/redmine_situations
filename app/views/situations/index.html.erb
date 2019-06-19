@@ -1,25 +1,28 @@
-<style>
-table, tr{
-    border: 1px solid black;
-    border-radius: 10px;
-    text-align:left;
-}
-th {
-    background-color:#D3D3D3;
-}
-</style>
+<head>
+    <style>
+        table, tr{
+            border: 1px solid black;
+            border-radius: 10px;
+            text-align:left;
+        }
+        th {
+            background-color: #D3D3D3;
+        }
+    </style>
+</head>
+<body>
 <h2>Situations</h2>
 User:
 <form>
     <input type="hidden" name="project_id" value="<%= params[:project_id]%>">
     <select name="formuser" >
       <option value="">All</option>
-      <% @forusers.each  do |s|%>
-        <% if params[:formuser] == s.author_id.to_s %>
-            <option selected value="<%= s.author_id%>"><%= User.find_by_id(s.author_id) %></option>
-        <% else %>
-            <option value="<%= s.author_id%>"><%= User.find_by_id(s.author_id) %></option>
-        <% end %>
+      <%@forusers.each  do |s|%>
+        <%if params[:formuser] == s.author_id.to_s%>
+            <option selected value="<%=s.author_id%>"><%= User.find_by_id(s.author_id)%></option>
+        <%else%>
+            <option value="<%= s.author_id%>"><%=User.find_by_id(s.author_id)%></option>
+        <%end%>
       <%end%>
     </select>
     <input type="submit" value="Apply">
@@ -44,46 +47,49 @@ User:
 
 <table style="width:80%;">
     <tr>
-        <% if params[:formuser] == "" || params[:formuser] == nil %>
-            <th width=1px><a href="?project_id=<%= params[:project_id]%>&sort=<%=@srt%>">Issue ID</a></th>
-        <% else %>
-            <th width=1px><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&sort=<%=@srt%>">Issue ID</a></th>
-        <% end %>
-        <th width=20px>Issue</th>
-        <th width=20px>User</th>
-        <% if params[:formuser] == "" || params[:formuser] == nil %>
-            <th width=2px><a href="?project_id=<%= params[:project_id]%>&time=<%=@time%>">Time(H)</a></th>
-        <% else %>
-            <th width=2px><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&time=<%=@time%>">Time(H)</a></th>
-        <% end %>
-        <th width=20px>Category</th>
-        <th width=20px>Status</th>
+        <%if params[:formuser] == "" || params[:formuser] == nil%>
+            <th width=4%><a href="?project_id=<%= params[:project_id]%>&sort=<%=@srt%>">Issue ID</a></th>
+        <%else%>
+            <th width=4%><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&sort=<%=@srt%>">Issue ID</a></th>
+        <%end%>
+        <th width=20%>Issue</th>
+        <th width=14%>User</th>
+        <%if params[:formuser] == "" || params[:formuser] == nil%>
+            <th width=7%><a href="?project_id=<%= params[:project_id]%>&time=<%=@time%>">Time(Hours Ago)</a></th>
+        <%else%>
+            <th width=7%><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&time=<%=@time%>">Time(Hours Ago)</a></th>
+        <%end%>
+        <th width=10%>Category</th>
+        <th width=15%>Status</th>
     </tr>
-    <% if @issuem == nil %>
+    <%if @issuem == nil%>
         <tr>
-            <td width=1px>-</td>
-            <td width=20px>-</td>
-            <td width=20px>-</td>
-            <td width=2px>-</td>
-            <td width=20px>-</td>
-            <td width=20px>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
         </tr>
-    <% else %>
-        <% @issuem.each do |s| %>
+    <%else%>
+        <%@issuem.each do |s|%>
             <tr bgcolor="#EEEEEE">
-                <td width=1px><%= s.id %></td>
-                <td width=20px><a href="/issues/<%=s.id%>"><%= s.subject %></a></td>
-                <td width=20px><%= User.find_by_id(s.author_id) %></td>
-                <td width=2px><%= ((Time.now-s.created_on).to_i/60/60) %></td>
-                <td width=20px><%= s.category_id %></td>
-                <td width=20px><%= IssueStatus.find_by_id(s.status_id) %>
-                   <%@jrs.each do |t|%>
-                         <%if t.journalized_id == s.id%>
-                             <% @jrsd.each do |s|%>
-                                <%if t.id == s.journal_id%>
-                                    <tr><td></td><td></td><td><%=User.find_by_id(t.user_id)%></td><td></td><td></td><td width=20px><%=IssueStatus.find_by_id(s.old_value)%>-><%= IssueStatus.find_by_id(s.value) %></td><tr>
-                                <%end%>
-                            <% end %>
+                <td><%=s.id%></td>
+                <td><a href="/issues/<%=s.id%>"><%=s.subject%></a></td>
+                <td><%=User.find_by_id(s.author_id)%></td>
+                <td><%=((Time.now-s.created_on)/60/60).round.to_i%></td>
+                <td><%=s.category_id%></td>
+                <td><%=IssueStatus.find_by_id(s.status_id)%>
+                   <%@jrs.where("journalized_id" => s.id).each do |t|%>
+                        <%@jrsd.where("journal_id" => t.id).each do |k|%>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><%=User.find_by_id(t.user_id)%></td>
+                                <td><%=((Time.now-t.created_on)/60/60).round.to_i%></td>
+                                <td></td>
+                                <td><%=IssueStatus.find_by_id(k.old_value)%>-><%=IssueStatus.find_by_id(k.value)%></td>
+                            <tr>
                         <%end%>
                     <%end%>
                 </td>
@@ -91,3 +97,85 @@ User:
         <%end%>
     <%end%>
 </table>
+<br><br>
+<h3>Status Times</h3>
+<table style="width:80%;">
+    <tr>
+        <th width=4% >Issue ID</th>
+        <th width=20%>Issue</th>
+        <%if params[:formuser] == "" || params[:formuser] == nil%>
+            <th width=1%><a href="?project_id=<%= params[:project_id]%>&time=<%=@time%>">Time(H)</a></th>
+        <%else%>
+            <th width=1%><a href="?project_id=<%= params[:project_id]%>&formuser=<%=params[:formuser]%>&time=<%=@time%>">Time(H)</a></th>
+        <%end%>
+        <th width=15%>Status</th>
+    </tr>
+    <%if @issuem == nil%>
+        <tr>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            
+        </tr>
+    <%else%>
+        <%@issuem.each do |i|%>
+            <%@jrsi = @jrs.where("journalized_id" => i.id )%>
+            <tr bgcolor="#EEEEEE">
+                <td><%=i.id%></td>
+                <td><a href="assets/<%=i.id.to_s%>.png" style="display:block;" title="Pie Chart"><%=i.subject%></a></td>
+                <td><%= ((Time.now-i.created_on)/60/60).round.to_i%></td>
+                <td>
+                    <%  @sum = {}
+                        (IssueStatus.all).each do |stat|
+                            @sum[stat] = 0
+                        end
+                        @jrsi.each do |j|
+                            @jrsd.where("journal_id" => j.id).each do |jd|
+                                if j.id != @jrsi.last.id
+                                    @jrsi.each do |jj|
+                                        if jj.id > j.id
+                                            @sum[IssueStatus.find_by_id(jd.value)] += ((jj.created_on-j.created_on)/60/60).round.to_i
+                                            break
+                                        end
+                                    end
+                                else
+                                    @sum[IssueStatus.find_by_id(jd.value)] += ((Time.now-j.created_on)/60/60).round.to_i
+                                    @sum[IssueStatus.find_by_id(@jrsd.where("journal_id" => @jrsi.first.id).first.old_value)] += ((@jrsi.first.created_on-i.created_on)/60/60).round.to_i
+                                end
+                            end
+                        end
+
+                        if @jrsi.first == nil
+                            @sum[IssueStatus.first] = ((Time.now-i.created_on)/60/60).round.to_i
+                        end
+                        if params[:time] == "0"
+                            @sum = @sum.sort_by {|k,v| v}.reverse
+                        elsif params[:time] == "1"
+                            @sum = @sum.sort_by {|k,v| v}
+                        end
+                    %>
+                    <%@sum.each do |key, value|%>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><%=value%></td>
+                            <td><%=key%></td>
+                        </tr>
+                    <%end%>
+                </td>
+            </tr>
+            <%
+                require 'gruff'
+
+                g = Gruff::Pie.new
+                g.title = i.subject+' - Status Times'
+                @sum.each do |key, value|
+                    g.data key, value
+                end
+                g.write('app/assets/images/'+i.id.to_s+'.png')
+            %>
+        <%end%>
+    <%end%>
+</table>
+</body>
