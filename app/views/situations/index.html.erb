@@ -1,16 +1,5 @@
-<head>
-    <style>
-        table, tr{
-            border: 1px solid black;
-            border-radius: 10px;
-            text-align:left;
-        }
-        th {
-            background-color: #D3D3D3;
-        }
-    </style>
-</head>
-<body>
+<%= stylesheet_link_tag 'plugin.css', :plugin => 'situations' %>
+<% html_title "Situations" %>
 <h2>Situations</h2>
 User:
 <form>
@@ -64,16 +53,11 @@ User:
     </tr>
     <%if @issuem == nil%>
         <tr>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
         </tr>
     <%else%>
         <%@issuem.each do |s|%>
-            <tr bgcolor="#EEEEEE">
+            <tr class="issuetr">
                 <td><%=s.id%></td>
                 <td><a href="/issues/<%=s.id%>"><%=s.subject%></a></td>
                 <td><%=User.find_by_id(s.author_id)%></td>
@@ -121,7 +105,7 @@ User:
     <%else%>
         <%@issuem.each do |i|%>
             <%@jrsi = @jrs.where("journalized_id" => i.id )%>
-            <tr bgcolor="#EEEEEE">
+            <tr class="issuetr">
                 <td><%=i.id%></td>
                 <td><a href="assets/<%=i.id.to_s%>.png" style="display:block;" title="Pie Chart"><%=i.subject%></a></td>
                 <td><%= ((Time.now-i.created_on)/60/60).round.to_i%></td>
@@ -178,4 +162,3 @@ User:
         <%end%>
     <%end%>
 </table>
-</body>
